@@ -6,8 +6,7 @@
 
 ### Resultado 
 
-<img src="docs/imgs/inside.gif" alt="inside" width="300"/>
-<img src="docs/imgs/delete.gif" alt="delete" width="300"/>
+<img src="docs/imgs/inside.gif" alt="inside" width="300"/><img src="docs/imgs/delete.gif" alt="delete" width="300"/>
 <img src="docs/imgs/1.png" alt="1" width="300"/>
 <img src="docs/imgs/2.png" alt="2" width="300"/>
 <img src="docs/imgs/3.png" alt="3" width="300"/>
