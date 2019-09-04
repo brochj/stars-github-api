@@ -1,6 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { Keyboard, ActivityIndicator } from 'react-native';
+import { Keyboard, ActivityIndicator, Alert } from 'react-native';
 import AsyncStorage from '@react-native-community/async-storage';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import api from '../../services/api';
@@ -12,6 +12,7 @@ import {
   SubmitButton,
   List,
   User,
+  UserHeader,
   Avatar,
   Name,
   Bio,
@@ -70,6 +71,27 @@ export default class Main extends React.Component {
     Keyboard.dismiss();
   };
 
+  handleDeleteUser = user => {
+    const { users } = this.state;
+
+    Alert.alert(
+      'Alerta',
+      'Deseja excluir esse usuário?',
+      [
+        { text: 'Cancelar', onPress: () => {} },
+        {
+          text: 'OK',
+          onPress: () => {
+            const array = [...users];
+            array.splice(user, 1);
+            this.setState({ users: array });
+          },
+        },
+      ],
+      { cancelable: false }
+    );
+  };
+
   handleNavigate = user => {
     const { navigation } = this.props;
 
@@ -103,12 +125,13 @@ export default class Main extends React.Component {
         <List
           data={users}
           keyExtractor={user => user.login}
-          renderItem={({ item }) => (
+          renderItem={({ item, index }) => (
             <User>
-              <Avatar source={{ uri: item.avatar }} />
-              <Name>{item.name}</Name>
-              <Bio>{item.bio}</Bio>
-
+              <UserHeader onLongPress={() => this.handleDeleteUser(index)}>
+                <Avatar source={{ uri: item.avatar }} />
+                <Name>{item.name}</Name>
+                <Bio>{item.bio}</Bio>
+              </UserHeader>
               <ProfileButton onPress={() => this.handleNavigate(item)}>
                 <ProfileButtonText>Ver Perfil</ProfileButtonText>
               </ProfileButton>

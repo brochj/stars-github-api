@@ -1,0 +1,1 @@
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/3905cace25004dcf960c6c5eea1c0633)](https://www.codacy.com/app/brochj/stars-github-api?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=brochj/stars-github-api&amp;utm_campaign=Badge_Grade)
