@@ -20,11 +20,14 @@ import {
 } from './styles';
 
 export default class Main extends React.Component {
-  state = {
-    newUser: '',
-    users: [],
-    loading: false,
-  };
+  static constructor(props) {
+    super(props);
+    this.state = {
+      newUser: '',
+      users: [],
+      loading: false,
+    };
+  }
 
   async componentDidMount() {
     console.tron.log(this.props);
