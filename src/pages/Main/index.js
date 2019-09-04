@@ -20,7 +20,7 @@ import {
 } from './styles';
 
 export default class Main extends React.Component {
-  static constructor(props) {
+  constructor(props) {
     super(props);
     this.state = {
       newUser: '',
@@ -30,7 +30,6 @@ export default class Main extends React.Component {
   }
 
   async componentDidMount() {
-    console.tron.log(this.props);
     const users = await AsyncStorage.getItem('users');
     if (users) {
       this.setState({
@@ -79,6 +78,7 @@ export default class Main extends React.Component {
 
   render() {
     const { users, newUser, loading } = this.state;
+
     return (
       <Container>
         <Form>

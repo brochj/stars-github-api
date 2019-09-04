@@ -3,17 +3,19 @@ import PropTypes from 'prop-types';
 
 import api from '../../services/api';
 import {
-  Container,
-  Header,
-  Name,
+  Author,
   Avatar,
   Bio,
-  Stars,
-  Starred,
-  OwnerAvatar,
+  Container,
+  Header,
   Info,
+  LoadingIndicator,
+  Name,
+  OwnerAvatar,
+  Starred,
+  Stars,
+  StarsFooter,
   Title,
-  Author,
 } from './styles';
 
 export default class User extends React.Component {
@@ -25,6 +27,9 @@ export default class User extends React.Component {
     super(props);
     this.state = {
       stars: [],
+      loading: true,
+      page: 1,
+      refreshing: false,
     };
   }
 
@@ -37,13 +42,48 @@ export default class User extends React.Component {
 
     this.setState({
       stars: response.data,
+      loading: false,
     });
   }
+
+  loadMore = async () => {
+    const { navigation } = this.props;
+    const { page, stars } = this.state;
+
+    const user = navigation.getParam('user');
+
+    const response = await api.get(
+      `/users/${user.login}/starred?page=${page + 1}`
+    );
+
+    this.setState({
+      stars: [...stars, ...response.data],
+      loading: false,
+      page: page + 1,
+    });
+  };
+
+  refreshList = async () => {
+    const { navigation } = this.props;
+
+    const user = navigation.getParam('user');
+
+    this.setState({ refreshing: true });
+    const response = await api.get(`/users/${user.login}/starred`);
+
+    this.setState({
+      stars: response.data,
+      refreshing: false,
+    });
+  };
 
   render() {
     const { navigation } = this.props;
     const user = navigation.getParam('user');
-    const { stars } = this.state;
+    const { stars, loading, refreshing } = this.state;
+
+    if (loading) return <LoadingIndicator />;
+
     return (
       <Container>
         <Header>
@@ -51,20 +91,35 @@ export default class User extends React.Component {
           <Name>{user.name}</Name>
           <Bio>{user.bio}</Bio>
         </Header>
-
-        <Stars
-          data={stars}
-          keyExtractor={star => String(star.id)}
-          renderItem={({ item }) => (
-            <Starred>
-              <OwnerAvatar source={{ uri: item.owner.avatar_url }} />
-              <Info>
-                <Title>{item.name}</Title>
-                <Author>{item.owner.login}</Author>
-              </Info>
-            </Starred>
-          )}
-        />
+        {refreshing ? (
+          <LoadingIndicator />
+        ) : (
+          <Stars
+            onRefresh={this.refreshList}
+            refreshing={refreshing}
+            onEndReachedThreshold={0.2}
+            onEndReached={this.loadMore}
+            ListFooterComponent={<StarsFooter />}
+            data={stars}
+            keyExtractor={star => String(star.id)}
+            renderItem={({ item }) => (
+              <Starred
+                onPress={() =>
+                  navigation.navigate('StarView', {
+                    name: item.full_name,
+                    url: item.html_url,
+                  })
+                }
+              >
+                <OwnerAvatar source={{ uri: item.owner.avatar_url }} />
+                <Info>
+                  <Title>{item.name}</Title>
+                  <Author>{item.owner.login}</Author>
+                </Info>
+              </Starred>
+            )}
+          />
+        )}
       </Container>
     );
   }
@@ -73,5 +128,6 @@ export default class User extends React.Component {
 User.propTypes = {
   navigation: PropTypes.shape({
     getParam: PropTypes.func,
+    navigate: PropTypes.func,
   }).isRequired,
 };
